@@ -1,21 +1,26 @@
 import React, { Fragment } from 'react';
 import { GET_TOP_STORIES, PAGE_SIZES } from '../constants';
+import { NavLink } from 'react-router-dom';
 
 class Stories extends React.Component {
   state = {
     defaultPageSize: 8,
     topStories: [],
     offset: 1,
-    error: false
+    error: false,
+    loading: false
   };
 
   _getTopStoriesFromAPI = async () => {
     try {
+      this.setState({ loading: true });
       const request = await fetch(GET_TOP_STORIES);
       const json = await request.json();
       this.setState({ topStories: json, error: false });
     } catch (error) {
       this.setState({ topStories: [], error: true });
+    } finally {
+      this.setState({ loading: false });
     }
   };
 
@@ -95,7 +100,11 @@ class Stories extends React.Component {
   };
 
   render() {
-    const { error } = this.state;
+    const { error, loading } = this.state;
+    if (loading) {
+      return <h2>Loading....</h2>;
+    }
+
     if (error) {
       return this.renderErrorMessage();
     }
@@ -108,7 +117,11 @@ class Stories extends React.Component {
         </div>
         <div>
           {records.map(record => {
-            return <div key={record}>{record}</div>;
+            return (
+              <div key={record}>
+                <NavLink to={`/${record}`}>{record}</NavLink>
+              </div>
+            );
           })}
         </div>
         <div>
