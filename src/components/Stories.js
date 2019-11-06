@@ -1,11 +1,11 @@
 import React, { Fragment } from 'react';
-import { GET_TOP_STORIES } from '../constants';
+import { GET_TOP_STORIES, PAGE_SIZES } from '../constants';
 
 class Stories extends React.Component {
   state = {
     defaultPageSize: 5,
     topStories: [],
-    offset: 0,
+    offset: 1,
     error: false
   };
 
@@ -28,17 +28,49 @@ class Stories extends React.Component {
   };
 
   _getResultSet = _ => {
-    const { pageSize = 5, topStories = [], offset = 0 } = this.state;
-    return topStories.slice(offset, pageSize);
+    const { defaultPageSize = 5, topStories = [], offset = 1 } = this.state;
+    const indexOfLastTodo = offset * defaultPageSize;
+    const indexOfFirstTodo = indexOfLastTodo - defaultPageSize;
+    return topStories.slice(indexOfFirstTodo, indexOfLastTodo);
   };
 
   renderErrorMessage = _ => {
     return (
       <div>
         There is problem loading results ...
-        <button onClick={this._refetchTopResults}>try again</button>
+        <button onClick={this._refetchTopResults}>Try again!</button>
       </div>
     );
+  };
+
+  _navigateTo = pageNum => {
+    this.setState({
+      offset: pageNum
+    });
+  };
+
+  _renderPageNumbers = _ => {
+    return Array.from({
+      length: Math.ceil(
+        this.state.topStories.length / this.state.defaultPageSize
+      )
+    }).map((_, i) => {
+      const pgNumber = i + 1;
+      return (
+        <li
+          key={pgNumber}
+          onClick={() => this._navigateTo(pgNumber)}
+          style={{
+            display: 'inline',
+            float: 'left',
+            padding: '5px',
+            margin: '5px'
+          }}
+        >
+          {pgNumber}
+        </li>
+      );
+    });
   };
 
   render() {
@@ -49,9 +81,15 @@ class Stories extends React.Component {
     const records = this._getResultSet();
     return (
       <Fragment>
-        {records.map(record => {
-          return <div key={record}>{record}</div>;
-        })}
+        <div>Select Page Size</div>
+        <div>
+          {records.map(record => {
+            return <div key={record}>{record}</div>;
+          })}
+        </div>
+        <div>
+          <span>{this._renderPageNumbers()}</span>
+        </div>
       </Fragment>
     );
   }
