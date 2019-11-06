@@ -49,7 +49,7 @@ class Stories extends React.Component {
     });
   };
 
-  _renderPageNumbers = _ => {
+  renderPageNumbers = _ => {
     return Array.from({
       length: Math.ceil(
         this.state.topStories.length / this.state.defaultPageSize
@@ -73,6 +73,27 @@ class Stories extends React.Component {
     });
   };
 
+  _setDefaultPageSize = event => {
+    this.setState({ defaultPageSize: event.target.value });
+  };
+
+  renderPageSizes = _ => {
+    return (
+      <select
+        value={this.state.defaultPageSize}
+        onChange={this._setDefaultPageSize}
+      >
+        {PAGE_SIZES.map(pageSize => {
+          return (
+            <option key={pageSize} value={pageSize}>
+              {pageSize}
+            </option>
+          );
+        })}
+      </select>
+    );
+  };
+
   render() {
     const { error } = this.state;
     if (error) {
@@ -81,14 +102,17 @@ class Stories extends React.Component {
     const records = this._getResultSet();
     return (
       <Fragment>
-        <div>Select Page Size</div>
+        <div>
+          Select Page Size
+          {this.renderPageSizes()}
+        </div>
         <div>
           {records.map(record => {
             return <div key={record}>{record}</div>;
           })}
         </div>
         <div>
-          <span>{this._renderPageNumbers()}</span>
+          <span>{this.renderPageNumbers()}</span>
         </div>
       </Fragment>
     );
