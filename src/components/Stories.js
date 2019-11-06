@@ -3,7 +3,7 @@ import { GET_TOP_STORIES, PAGE_SIZES } from '../constants';
 
 class Stories extends React.Component {
   state = {
-    defaultPageSize: 5,
+    defaultPageSize: 8,
     topStories: [],
     offset: 1,
     error: false
